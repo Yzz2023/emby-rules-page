@@ -1,0 +1,291 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Emby与Jellyfin公益服保号规则</title>
+    <!-- 引入Tailwind CSS以实现现代化和响应式设计 -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* 引入更适合中文阅读的字体 */
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+SC:wght@400;500;700&display=swap');
+        body {
+            font-family: 'Noto Sans SC', sans-serif;
+            background-color: #f0f2f5;
+        }
+        /* 卡片悬停时的动效 */
+        .card-hover {
+            transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+        }
+        .card-hover:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+        /* 规则标签颜色定义 */
+        .rule-tag-green { background-color: #e6f7f2; color: #00a878; }
+        .rule-tag-blue { background-color: #e6f3ff; color: #007bff; }
+        .rule-tag-orange { background-color: #fff4e6; color: #ff8c00; }
+        .rule-tag-gray { background-color: #f0f0f0; color: #595959; }
+        
+        /* 筛选按钮样式 */
+        .filter-btn {
+            transition: all 0.3s ease;
+        }
+        .filter-btn.active {
+            background-color: #1677ff;
+            color: white;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="container mx-auto p-4 sm:p-6 lg:p-8">
+        <!-- 页面主标题 -->
+        <header class="text-center mb-6">
+            <h1 class="text-3xl sm:text-4xl font-bold text-gray-800">Emby与Jellyfin公益服保号规则</h1>
+        </header>
+
+        <!-- 说明区域 -->
+        <div class="bg-blue-50 border-l-4 border-blue-400 text-blue-800 p-4 rounded-r-lg mb-8" role="alert">
+            <p>本文档仅讨论各公益服的保号规则与方式，暂不讨论开号方法。列表内仅保留公开服的联系地址，私服地址已移除。内容仅基于我所知道的和拥有的整理，欢迎通过评论或私信补充更多信息。未来计划创建一个可共同维护的Notion文档，敬请期待。</p>
+        </div>
+
+        <!-- 筛选功能区域 -->
+        <div id="filter-container" class="flex flex-wrap justify-center gap-2 mb-8">
+            <button data-filter="all" class="filter-btn active font-medium py-2 px-4 rounded-full bg-white text-gray-700 shadow-sm">全部显示</button>
+            <button data-filter="no_maintenance" class="filter-btn font-medium py-2 px-4 rounded-full bg-white text-gray-700 shadow-sm">无需保号</button>
+            <button data-filter="watch_time" class="filter-btn font-medium py-2 px-4 rounded-full bg-white text-gray-700 shadow-sm">观看记录</button>
+            <button data-filter="currency" class="filter-btn font-medium py-2 px-4 rounded-full bg-white text-gray-700 shadow-sm">签到/积分</button>
+        </div>
+
+        <!-- 卡片网格布局 -->
+        <main id="server-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <!-- 卡片将由JavaScript动态生成 -->
+        </main>
+
+        <footer class="text-center mt-12 text-gray-500 text-sm"></footer>
+    </div>
+
+    <script>
+        // 1. 定义图标数据源
+        const iconData = [
+            {"name":"tdck_emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/tdck_emby.png"},
+            {"name":"afree-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/afree-emby.png"},
+            {"name":"zox-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/zox-emby.png"},
+            {"name":"shouhou(5)SNTP-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/shouhou(5)SNTP-emby.png"},
+            {"name":"hka-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/hka-emby.png"},
+            {"name":"hohai-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/hohai-emby.png"},
+            {"name":"nyamedia-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/nyamedia-emby.png"},
+            {"name":"doubon(1)-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/doubon(1)-emby.png"},
+            {"name":"fatbeef-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/fatbeef-emby.png"},
+            {"name":"PrejuDice-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/PrejuDice-emby.png"},
+            {"name":"jianshouqing-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/jianshouqing-emby.png"},
+            {"name":"libhsulife", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/libhsulife.png"},
+            {"name":"Misty-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/Misty-emby.png"},
+            {"name":"handou-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/handou-emby.png"},
+            {"name":"star-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/star-emby.png"},
+            {"name":"star2-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/star2-emby.png"},
+            {"name":"shrek-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/shrek-emby.png"},
+            {"name":"Cundang", "url":"https://raw.githubusercontent.com/TFEL00/Emby/main/icons/Cundang.PNG"},
+            {"name":"anihub", "url":"https://th.bing.com/th/id/R.cbb0a145509a957b0a2fc0a2e577393a?rik=ecsfugPnC0sq5A&riu=http%3a%2f%2fi2.hdslb.com%2fbfs%2farchive%2fd3ec5692f2ebb82e73a4c42b67cbc9fa62797618.jpg&ehk=6iGmy6%2faSInQ9G3Zbb%2bjAT59pLrIo%2bCWTUz7K5vCwZ0%3d&risl=&pid=ImgRaw&r=0"},
+            {"name":"theluyuan", "url":"data:image/svg+xml;base64,PHN2ZyB0PSIxNzU0NzExNTY5OTg5IiBjbGFzcz0iaWNvbiIgdmlld0JveD0iMCAwIDEwMjQgMTAyNCIgdmVyc2lvbj0iMS4xIiB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHAtaWQ9IjE2MjIiIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48cGF0aCBkPSJNMCAwaDEwMjR2MTAyNEgwVjB6IiBmaWxsPSIjMjAyNDI1IiBvcGFjaXR5PSIuMDEiIHAtaWQ9IjE2MjMiPjwvcGF0aD48cGF0aCBkPSJNNTEyIDg4Ny40NjY2NjdhMzQuMTMzMzMzIDM0LjEzMzMzMyAwIDAgMSAzNC4xMzMzMzMtMzQuMTMzMzM0aDM3NS40NjY2NjdhMzQuMTMzMzMzIDM0LjEzMzMzMyAwIDAgMSAzNC4xMzMzMzMgMzQuMTMzMzM0djM0LjEzMzMzM2EzNC4xMzMzMzMgMzQuMTMzMzMzIDAgMCAxLTM0LjEzMzMzMyAzNC4xMzMzMzNINTQ2LjEzMzMzM2EzNC4xMzMzMzMgMzQuMTMzMzMzIDAgMCAxLTM0LjEzMzMzMy0zNC4xMzMzMzN2LTM0LjEzMzMzM3oiIGZpbGw9IiNGRkFBNDQiIHAtaWQ9IjE2MjQiPjwvcGF0aD48cGF0aCBkPSJNOTU1LjczMzMzMyA1MTJjMCAyNDUuMDc3MzMzLTE5OC4xNTYgNDQzLjczMzMzMy00NDMuNzMzMzMzIDQ0My4xMzMzMzNTNjguMjY2NjY3IDc1Ny4wNzczMzMgNjguMjY2NjY3IDUxMiAyNjYuOTIyNjY3IDY4LjI2NjY2NyA1MTIgNjguMjY2NjY3czQ0My4xMzMzMzMgMTk4LjY1NiA0NDMuNzMzMzMzIDQ0My43MzMzMzN6IiBmaWxsPSIjMTFBQTY2IiBwLWlkPSIxNjI1Ij48L3BhdGg+PHBhdGggZD0iTTUxMiAzNzUuNDY2NjY3YTEwMi40IDEwMi40IDAgMSAwIDAtMjA0LjggMTAyLjQgMTAyLjQgMCAwIDAgMCAyMDQuOHogbTEzNi41MzMzMzMgMTM2LjUzMzMzM2ExMDIuNCAxMDIuNCAwIDEgMCAyMDQuOCAwIDEwMi40IDEwMi40IDAgMCAwLTIwNC44IDB6IG0tMjM4LjkzMzMzMyAyMzguOTMzMzMzYTEwMi40IDEwMi40IDAgMSAxIDIwNC44IDAgMTAyLjQgMTAyLjQgMCAwIDEtMjA0LjggMHogbS0zNC4xMzMzMzMtMjM4LjkzMzMzM2ExMDIuNCAxMDIuNCAwIDEgMC0yMDQuOCAwIDEwMi40IDEwMi40IDAgMCAwIDIwNC44IDB6IiBmaWxsPSIjRkZGRkZGIiBwLWlkPSIxNjI2Ij48L3BhdGg+PC9zdmc+"},
+            {"name":"Youno-emby", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/Youno-emby.png"},
+            {"name":"feiyue", "url":"https://raw.githubusercontent.com/lige47/QuanX-icon-rule/main/icon/feiyue.png"}
+        ];
+
+        // 2. 从数据源创建图标映射表
+        const iconMap = {};
+        iconData.forEach(item => {
+            iconMap[item.name] = item.url;
+        });
+
+        // 3. 创建一个精确的名称到图标键的映射表
+        const nameToIconKey = {
+            "起点站": "tdck_emby",
+            "105° 动漫服": "afree-emby",
+            "Zox free": "zox-emby",
+            "SNTP Media Lite": "shouhou(5)SNTP-emby",
+            "hkaemby": "hka-emby",
+            "HOHAI": "hohai-emby",
+            "nyamedia": "nyamedia-emby",
+            "Doubon": "doubon(1)-emby",
+            "Feiniu (肥牛)": "fatbeef-emby",
+            "PrejuDice": "PrejuDice-emby",
+            "见手青": "jianshouqing-emby",
+            "稳健服": "libhsulife",
+            "Misty": "Misty-emby",
+            "憨豆": "handou-emby",
+            "STAR1": "star-emby",
+            "STAR2": "star2-emby",
+            "Shrey": "shrek-emby",
+            "Zn的影视库": "Cundang",
+            "AniHub": "anihub",
+            "theluyuan": "theluyuan",
+            "Youno": "Youno-emby",
+            "非越": "feiyue"
+        };
+        
+        // 4. 定义服务器数据
+        let servers = [
+            { name: "起点站", rule: "21天内需有观看记录", type: "watch_time", address: "https://web.telegram.org/k/#@tdckemby", tags: ["Emby"], notes: "" },
+            { name: "JellyKlaws", rule: "月观看需满4小时，否则禁用", type: "watch_time", address: "", tags: ["私服", "Jellyfin"], notes: "" },
+            { name: "105° 动漫服", rule: "无需保号", type: "no_maintenance", address: "https://web.telegram.org/k/#@afreeemby", tags: ["Emby", "动漫服"], notes: "可能与日本节点不兼容" },
+            { name: "Zox free", rule: "30天内签到100BTC", type: "currency", address: "https://web.telegram.org/k/#@zoxfree", tags: ["Emby"], notes: "" },
+            { name: "theluyuan", rule: "无需保号", type: "no_maintenance", address: "", tags: ["Emby", "私服"], notes: "" },
+            { name: "Zn的影视库", rule: "无需保号", type: "no_maintenance", address: "https://web.telegram.org/k/#@embyac", tags: ["Emby", "存档服"], notes: "资源不再更新" },
+            // **修正点**: 移除守候标签，添加备注
+            { name: "SNTP Media Lite", rule: "60天内需有观看记录", type: "watch_time", address: "https://web.telegram.org/k/#@sntp_emby_lite_v2", tags: ["Emby"], notes: "守候旗下公益服" },
+            { name: "hkaemby", rule: "21天内需有观看记录", type: "watch_time", address: "https://web.telegram.org/k/#@hkaemby", tags: ["Emby", "含NSFW"], notes: "" },
+            { name: "HOHAI", rule: "无需保号", type: "no_maintenance", address: "", tags: ["Emby", "私服"], notes: "" },
+            { name: "AniHub", rule: "无需保号", type: "no_maintenance", address: "", tags: ["Emby", "动漫服", "私服"], notes: "" },
+            { name: "nyamedia", rule: "无需保号", type: "no_maintenance", address: "https://web.telegram.org/k/#@nyamedia_chat", tags: ["Emby"], notes: "" },
+            // **修正点**: 更新Doubon备注
+            { name: "Doubon", rule: "无需保号", type: "no_maintenance", address: "https://web.telegram.org/k/#@doubon", tags: ["Emby", "电影服"], notes: "(不支持VidHub/EplayerX/Lenna，其他未知)" },
+            { name: "Feiniu (肥牛)", rule: "21天观看记录 + 100币 (双重规则)", type: "watch_time", address: "https://web.telegram.org/k/#-2596191898", tags: ["Emby"], notes: "" },
+            { name: "PrejuDice", rule: "无需保号", type: "no_maintenance", address: "", tags: ["Emby", "动漫服"], notes: "" },
+            { name: "见手青", rule: "21天内需有观看记录", type: "watch_time", address: "https://web.telegram.org/k/#@jsq_group1", tags: ["Emby"], notes: "蘑菇旗下公益服" },
+            { name: "稳健服", rule: "签到获取88稳健币或用积分兑换", type: "currency", address: "https://web.telegram.org/k/#@libhsulife", tags: ["Emby"], notes: "" },
+            { name: "Misty", rule: "21天内需有观看记录", type: "watch_time", address: "https://web.telegram.org/k/#@FreeEmbyGroup", tags: ["Emby"], notes: "" },
+            { name: "憨豆", rule: "30天10000币自动续期", type: "currency", address: "https://web.telegram.org/k/#@handouemby", tags: ["Emby"], notes: "" },
+            { name: "Shrey", rule: "无需保号 (不删档内测)", type: "no_maintenance", address: "https://web.telegram.org/k/#-2871036750", tags: ["Emby"], notes: "" },
+            { name: "STAR1", rule: "7天内需有观看记录", type: "watch_time", address: "https://web.telegram.org/k/#@star_emby_chat", tags: ["Emby"], notes: "" },
+            { name: "STAR2", rule: "30天内需有观看记录", type: "watch_time", address: "https://web.telegram.org/k/#-2540396469", tags: ["Emby", "NSFW服"], notes: "" },
+            { name: "Youno", rule: "签到50积分", type: "currency", address: "https://web.telegram.org/k/#-2358119200", tags: ["Emby"], notes: "YounoPlus旗下, 同时播放设备数: 2" },
+            // **修正点**: 更新非越备注
+            { name: "非越", rule: "无需保号，但清理长期不活跃用户", type: "no_maintenance", address: "https://web.telegram.org/k/#@lilililililiiilllll", tags: ["Emby"], notes: "SIESTA旗下公益服" }
+        ].map(server => {
+            let iconUrl = null;
+            if (server.name === "JellyKlaws") {
+                iconUrl = "https://raw.githubusercontent.com/jellyfin/jellyfin-ux/master/branding/SVG/icon-transparent.svg";
+            } else {
+                const iconKey = nameToIconKey[server.name];
+                if (iconKey) {
+                    iconUrl = iconMap[iconKey];
+                }
+            }
+            return { ...server, icon: iconUrl };
+        });
+
+        // 实施新的排序逻辑
+        function getSortPriority(server) {
+            if (server.tags.includes('私服')) return 3;
+            if (server.tags.includes('动漫服')) return 2;
+            if (server.tags.includes('NSFW服') || server.tags.includes('含NSFW')) return 1;
+            return 0; // 默认组
+        }
+
+        servers.sort((a, b) => {
+            const priorityA = getSortPriority(a);
+            const priorityB = getSortPriority(b);
+
+            if (priorityA !== priorityB) {
+                return priorityA - priorityB; // 按主要优先级排序
+            }
+
+            // 如果优先级相同，则按标签数量排序
+            return a.tags.length - b.tags.length;
+        });
+
+
+        // 5. 其余的渲染和交互逻辑保持不变
+        const grid = document.getElementById('server-grid');
+        const filterContainer = document.getElementById('filter-container');
+
+        function getRulePresentation(type) {
+            switch (type) {
+                case 'no_maintenance': return { className: 'rule-tag-green', icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75 11.25 15 15 9.75M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>` };
+                case 'watch_time': return { className: 'rule-tag-blue', icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>` };
+                case 'currency': return { className: 'rule-tag-orange', icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 18.75a60.07 60.07 0 0 1 15.797 2.101c.727.198 1.453-.342 1.453-1.096V18.75M3.75 4.5v.75A.75.75 0 0 1 3 6h-.75m0 0v-.375c0-.621.504-1.125 1.125-1.125H20.25M2.25 6v9m18-10.5v.75c0 .414.336.75.75.75h.75m-1.5-1.5h.375c.621 0 1.125.504 1.125 1.125v9.75c0 .621-.504 1.125-1.125 1.125h-15c-.621 0-1.125-.504-1.125-1.125V8.25c0-.621.504-1.125 1.125-1.125h.375m15-3-15 3m0 0v7.5" /></svg>` };
+                default: return { className: 'rule-tag-gray', icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2"><path stroke-linecap="round" stroke-linejoin="round" d="m11.25 11.25.041-.02a.75.75 0 0 1 1.063.852l-.708 2.836a.75.75 0 0 0 1.063.853l.041-.021M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Zm-9-3.75h.008v.008H12V8.25Z" /></svg>` };
+            }
+        }
+        
+        function getTagStyle(tag) {
+            const tagLower = tag.toLowerCase();
+            if (tagLower.includes('nsfw')) return 'bg-red-200 text-red-700';
+            if (tagLower.includes('emby')) return 'bg-teal-200 text-teal-800';
+            if (tagLower.includes('jellyfin')) return 'bg-purple-200 text-purple-700';
+            if (tagLower.includes('私服')) return 'bg-indigo-200 text-indigo-700';
+            if (tagLower.includes('动漫')) return 'bg-pink-200 text-pink-700';
+            if (tagLower.includes('电影')) return 'bg-blue-200 text-blue-700';
+            if (tagLower.includes('存档')) return 'bg-gray-300 text-gray-800';
+            return 'bg-gray-200 text-gray-700';
+        }
+
+        function renderCards(filter = 'all') {
+            grid.innerHTML = '';
+            const filteredServers = servers.filter(server => filter === 'all' || server.type === filter);
+            
+            filteredServers.forEach(server => {
+                const card = document.createElement('div');
+                card.className = 'bg-white rounded-xl shadow-md p-5 card-hover flex flex-col justify-between';
+                card.dataset.type = server.type;
+
+                const { className: tagClass, icon: iconHTML } = getRulePresentation(server.type);
+
+                const addressHTML = server.address
+                    ? `<a href="${server.address}" target="_blank" class="text-blue-500 hover:text-blue-700 break-all transition-colors duration-300">点击前往</a>`
+                    : '<span class="text-gray-400">已隐藏</span>';
+
+                const tagsHTML = server.tags.map(tag => 
+                    `<span class="text-xs font-semibold inline-block py-1 px-2 rounded-full ${getTagStyle(tag)} last:mr-0 mr-1 mb-1">
+                        ${tag}
+                    </span>`
+                ).join('');
+                
+                const isJellyfin = server.tags.includes('Jellyfin');
+                const fallbackIconUrl = isJellyfin 
+                    ? `https://placehold.co/40x40/7E57C2/FFFFFF?text=J`
+                    : `https://placehold.co/40x40/4CAF50/FFFFFF?text=E`;
+
+                const iconSrc = server.icon || fallbackIconUrl;
+
+                const notesHTML = server.notes
+                    ? `<div class="mt-4 pt-4 border-t border-gray-200">
+                           <p class="text-sm text-gray-600 flex items-start">
+                               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2 text-yellow-500 flex-shrink-0 mt-0.5"><path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m9-.75a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" /></svg>
+                               <span><span class="font-medium">备注:</span>&nbsp;${server.notes}</span>
+                           </p>
+                       </div>`
+                    : '';
+
+                card.innerHTML = `
+                    <div>
+                        <div class="flex justify-between items-start mb-3">
+                            <div class="flex items-center">
+                                <img src="${iconSrc}" alt="${server.name} logo" class="w-8 h-8 mr-3 rounded-md flex-shrink-0 object-cover" onerror="this.onerror=null;this.src='${fallbackIconUrl}';">
+                                <h2 class="text-lg font-bold text-gray-800">${server.name}</h2>
+                            </div>
+                            <div class="flex-shrink-0 ml-2 flex flex-wrap justify-end">${tagsHTML}</div>
+                        </div>
+                        <div class="mb-4">
+                            <span class="inline-flex items-center text-sm font-medium px-3 py-1 rounded-full ${tagClass}">
+                                ${iconHTML}
+                                ${server.rule}
+                            </span>
+                        </div>
+                        <div class="text-sm text-gray-500 flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5 mr-2 flex-shrink-0"><path stroke-linecap="round" stroke-linejoin="round" d="M13.19 8.688a4.5 4.5 0 0 1 1.242 7.244l-4.5 4.5a4.5 4.5 0 0 1-6.364-6.364l1.757-1.757m13.35-.622 1.757-1.757a4.5 4.5 0 0 0-6.364-6.364l-4.5 4.5a4.5 4.5 0 0 0 1.242 7.244" /></svg>
+                            <strong class="mr-2">地址:</strong> ${addressHTML}
+                        </div>
+                    </div>
+                    ${notesHTML}
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        filterContainer.addEventListener('click', (e) => {
+            if (e.target.tagName === 'BUTTON') {
+                filterContainer.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                renderCards(e.target.dataset.filter);
+            }
+        });
+
+        renderCards();
+    </script>
+
+</body>
+</html>
